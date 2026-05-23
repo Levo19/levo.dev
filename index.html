@@ -123,6 +123,27 @@
   /* Transition helpers */
   .fade-enter-active,.fade-leave-active { transition: opacity .25s; }
   .fade-enter-from,.fade-leave-to { opacity: 0; }
+
+  /* ===== CV styles ===== */
+  .cv-h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .8px; font-weight: 800; color: var(--primary); border-bottom: 2px solid var(--border-strong); padding-bottom: 4px; margin-bottom: 8px; }
+  .cv-doc { font-family: 'Inter', sans-serif; }
+
+  /* ===== Print (descargar PDF) ===== */
+  @media print {
+    @page { size: A4; margin: 14mm 12mm; }
+    body { background: #ffffff !important; color: #1a1a1a !important; }
+    .no-print, header, nav, .pb-28, [class*="bottom-0"] { display: none !important; }
+    main { padding: 0 !important; max-width: 100% !important; }
+    #app { max-width: 100% !important; }
+    #cv-printable { background: #ffffff !important; border: 0 !important; padding: 0 !important; box-shadow: none !important; backdrop-filter: none !important; color: #1a1a1a !important; }
+    #cv-printable * { color: #1a1a1a !important; }
+    #cv-printable .gradient-text { -webkit-text-fill-color: #0a2540 !important; background: none !important; color: #0a2540 !important; }
+    #cv-printable .text-primary, #cv-printable .cv-h2 { color: #1f4e79 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    #cv-printable .text-accent { color: #2e7d32 !important; }
+    #cv-printable a { color: #1f4e79 !important; text-decoration: none; }
+    #cv-printable .cv-h2 { border-bottom: 2px solid #c0d4e8 !important; }
+    #cv-printable .border-soft { border-color: #d0d8e0 !important; }
+  }
 </style>
 </head>
 <body>
@@ -414,6 +435,128 @@
         </div>
       </div>
 
+      <!-- Sub-vista: CV -->
+      <div v-if="yoView==='cv'" class="space-y-4">
+        <div class="no-print flex items-center justify-between">
+          <button @click="yoView='menu'" class="text-mute text-sm">← Atrás</button>
+          <div class="flex gap-2">
+            <button @click="compartirCV" class="btn-ghost px-3 py-2 rounded-xl text-xs font-bold">🔗 Compartir</button>
+            <button @click="imprimirCV" class="btn-primary px-3 py-2 rounded-xl text-xs">⬇️ Descargar PDF</button>
+          </div>
+        </div>
+
+        <div id="cv-printable" class="glass rounded-2xl p-5 space-y-5 cv-doc">
+          <!-- Header CV -->
+          <div class="text-center border-b border-soft pb-4">
+            <div class="text-2xl font-black gradient-text">LUIS ENRIQUE VÁSQUEZ OSTOS</div>
+            <div class="text-sm text-primary font-semibold mt-1">Desarrollador Full-Stack &amp; Solutions Builder (AI-Augmented)</div>
+            <div class="text-xs text-mute mt-1">Automatización &amp; Sistemas Internos</div>
+            <div class="text-xs text-mute mt-3 flex flex-wrap justify-center gap-x-2 gap-y-1">
+              <span>📧 luisvo.19@gmail.com</span><span>·</span>
+              <span>📱 +51 987 320 381</span><span>·</span>
+              <span>📍 Lima, Perú</span><span>·</span>
+              <span class="text-accent">100% Remoto</span><span>·</span>
+              <a href="https://github.com/Levo19" target="_blank" class="text-primary">github.com/Levo19</a>
+            </div>
+          </div>
+
+          <!-- Perfil -->
+          <div>
+            <div class="cv-h2">Perfil Profesional</div>
+            <p class="text-xs leading-relaxed text-strong">
+              Desarrollador y diseñador de soluciones que transforma negocios reales de principio a fin. En 3 años diseñé, construí y puse en producción <b>6 aplicaciones web (PWA)</b> que hoy operan dos grupos empresariales completos — un grupo de <b>retail de abarrotes</b> (mayorista y minorista) y un grupo de <b>hotelería + turismo</b> — automatizando venta, almacén, facturación electrónica, caja y administración. Trabajo acelerado por IA (mi flujo evolucionó de AppSheet y n8n a Claude Code). Sólido en <b>JavaScript (ES6+), Vue 3, PWAs y arquitectura serverless</b> (Google Apps Script), con integración de APIs (Nubefact/SUNAT, PrintNode, Firebase, Claude API).
+            </p>
+          </div>
+
+          <!-- Habilidades -->
+          <div>
+            <div class="cv-h2">Habilidades Técnicas</div>
+            <div class="text-xs space-y-1.5">
+              <div><b class="text-primary">Frontend:</b> <span class="text-strong">JavaScript ES6+, Vue 3 (Composition API), HTML5, CSS3, Tailwind, PWA</span></div>
+              <div><b class="text-primary">Backend:</b> <span class="text-strong">Google Apps Script (serverless), APIs REST, idempotencia (LockService)</span></div>
+              <div><b class="text-primary">Integraciones:</b> <span class="text-strong">Nubefact (SUNAT), PrintNode, Firebase Cloud Messaging, Claude API (OCR/visión), Chart.js</span></div>
+              <div><b class="text-primary">Automatización:</b> <span class="text-strong">n8n, AppSheet, triggers programados</span></div>
+              <div><b class="text-primary">IA aplicada:</b> <span class="text-strong">Claude Code, Antigravity, Gemini — desarrollo asistido por LLMs</span></div>
+              <div><b class="text-primary">SQL &amp; Datos:</b> <span class="text-strong">Modelado relacional, consultas con JOINs (nivel intermedio-avanzado)</span></div>
+              <div><b class="text-primary">Tooling:</b> <span class="text-strong">Git/GitHub, GitHub Pages, clasp, service workers</span></div>
+              <div><b class="text-primary">Infraestructura:</b> <span class="text-strong">Raspberry Pi 5, redes WiFi, CCTV/DVR, POS</span></div>
+            </div>
+          </div>
+
+          <!-- Experiencia -->
+          <div>
+            <div class="cv-h2">Experiencia Profesional</div>
+
+            <div class="mb-3">
+              <div class="text-sm font-bold text-strong">Desarrollador Full-Stack &amp; Líder de Sistemas</div>
+              <div class="text-[11px] italic text-mute">Inversiones Mos EIRL · Retail de abarrotes (mayorista y minorista) · Abril 2023 – Presente</div>
+              <ul class="text-xs mt-1 space-y-1 list-disc pl-4 text-strong">
+                <li>Diseñé y desplegué un <b>ecosistema de 4 PWAs interconectadas</b> (POS, almacén, panel maestro, TV) que digitaliza el ciclo completo retail.</li>
+                <li><b>+900 funciones de backend</b> y 200+ endpoints en Apps Script, con idempotencia, auditoría y manejo robusto de errores.</li>
+                <li><b>POS offline-first</b> con facturación electrónica SUNAT (Nubefact); gestiona 2 puntos de venta 100% remoto.</li>
+                <li>Integré <b>IA de visión (Claude API)</b> para OCR automático de facturas de proveedores.</li>
+                <li>Integraciones: PrintNode (térmica + ZPL), Firebase FCM, dashboards Chart.js en tiempo real.</li>
+              </ul>
+            </div>
+
+            <div class="mb-3">
+              <div class="text-sm font-bold text-strong">Desarrollador &amp; Arquitecto de Sistemas</div>
+              <div class="text-[11px] italic text-mute">Grupo Paracas · Hotelería &amp; Operador Turístico · 2023 – Presente</div>
+              <ul class="text-xs mt-1 space-y-1 list-disc pl-4 text-strong">
+                <li>Construí un <b>ecosistema de 3 PWAs</b> (PMS hotelero, operaciones marítimas, panel maestro) sobre backend serverless común.</li>
+                <li><b>Panel administrativo en Vue 3</b> (6 vistas) que consolida 3 fuentes de datos en tiempo real.</li>
+                <li>Modelé un <b>sistema de pases/derivaciones entre agencias</b> con lógica de negocio no trivial.</li>
+                <li>Optimistic UI con rollback, triggers de cierre automático, integración con Google Drive.</li>
+              </ul>
+            </div>
+
+            <div>
+              <div class="text-sm font-bold text-strong">Gestor de Operaciones y Depósitos Minoristas</div>
+              <div class="text-[11px] italic text-mute">Sector Comercial y Logístico · 2008 – Marzo 2023</div>
+              <ul class="text-xs mt-1 space-y-1 list-disc pl-4 text-strong">
+                <li>Más de <b>15 años</b> asegurando el flujo de mercadería y operación de depósitos — base del entendimiento de negocio que hoy traduzco en software.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Proyectos -->
+          <div>
+            <div class="cv-h2">Proyectos Destacados</div>
+            <div class="text-xs space-y-1 text-strong">
+              <div><b>Ecosistema Inversiones MOS</b> — 4 PWAs (POS + almacén + panel + TV) con facturación SUNAT, offline-first y OCR IA. <span class="text-primary">github.com/Levo19/MOS</span></div>
+              <div><b>MosExpress</b> — POS PWA Vue 3 + Apps Script. <span class="text-primary">github.com/Levo19/MosExpress</span></div>
+              <div><b>Ecosistema grupoPS</b> — PMS hotelero + operaciones + panel Vue 3. <span class="text-primary">github.com/Levo19/PS-Panel</span></div>
+              <div><b>Levo.dev</b> — Este portal (Vue 3 + GAS + Claude API). <span class="text-primary">github.com/Levo19/levo.dev</span></div>
+            </div>
+          </div>
+
+          <!-- Idiomas -->
+          <div>
+            <div class="cv-h2">Idiomas</div>
+            <ul class="text-xs space-y-1 list-disc pl-4 text-strong">
+              <li><b>Español</b> — Nativo</li>
+              <li><b>Inglés</b> — Intermedio (B1-B2): lectura técnica fluida, escrito intermedio-avanzado, reuniones de trabajo</li>
+            </ul>
+          </div>
+
+          <!-- Educación -->
+          <div>
+            <div class="cv-h2">Formación Académica</div>
+            <p class="text-[11px] italic text-mute mb-2">Formación universitaria multidisciplinaria en tecnología, administración y contabilidad — base de mi enfoque de desarrollo orientado al negocio.</p>
+            <div class="text-xs space-y-0.5 text-strong">
+              <div><b>Ingeniería Informática</b> — PUCP · 2006–2009</div>
+              <div><b>Ingeniería Informática</b> — USIL · 2010–2012</div>
+              <div><b>Administración y Finanzas</b> — Universidad ESAN · 2015–2017</div>
+              <div><b>Contabilidad</b> — UTP · 2023–2025</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="no-print text-center text-xs text-mute">
+          💡 Al darle "Descargar PDF" elige <b>"Guardar como PDF"</b> en el diálogo de impresión.
+        </div>
+      </div>
+
       <!-- Sub-vista: PERFIL -->
       <div v-if="yoView==='perfil'" class="space-y-4">
         <button @click="yoView='menu'" class="text-mute text-sm">← Atrás</button>
@@ -652,11 +795,21 @@ createApp({
     ];
 
     const yoMenu = [
+      { id:'cv', icon:'📄', titulo:'Mi CV', detalle:'Ver y descargar como PDF · listo para enviar' },
       { id:'perfil', icon:'👤', titulo:'Perfil profesional', detalle:'Datos, stack, idiomas, links' },
       { id:'banco', icon:'📋', titulo:'Banco de respuestas', detalle:'Copia y pega en cualquier formulario' },
       { id:'portal', icon:'🔗', titulo:'Portal de plataformas', detalle:'Bolsas y freelance por prioridad' },
       { id:'config', icon:'⚙️', titulo:'Configuración', detalle:'Tema, sonidos, backend' },
     ];
+
+    const imprimirCV = () => { window.print(); };
+    const compartirCV = async () => {
+      const url = location.href.replace(/index\.html.*$/,'') + 'cv.html';
+      try {
+        if (navigator.share) await navigator.share({ title:'CV — Luis Vásquez', url });
+        else { await navigator.clipboard.writeText(url); mostrarToast('🔗 Link del CV copiado'); }
+      } catch(e) {}
+    };
 
     // ===== Aplicar tema =====
     const aplicarTema = () => {
@@ -930,6 +1083,7 @@ createApp({
              postulaciones, columnasTracker, postuladoModal, nuevaPostulacion, editarPostulacion, guardarPostulacion, eliminarPostulacion, postulacionesEnCol, moverPostulacion, siguienteEstadoLabel, rechazar, tasaRespuesta,
              plataformasGrupos,
              confirmar, ejecutarConfirmar,
+             imprimirCV, compartirCV,
              irA, alternarTema, copiarRespuesta, copiarTexto, guardarBackend, exportarDatos, resetearDatos };
   }
 }).mount('#app');
