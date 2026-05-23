@@ -124,6 +124,17 @@
   .fade-enter-active,.fade-leave-active { transition: opacity .25s; }
   .fade-enter-from,.fade-leave-to { opacity: 0; }
 
+  /* Glow pulse para botón "Actualizar ya" */
+  @keyframes glowPulse {
+    0%,100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent); }
+    50%     { box-shadow: 0 0 0 14px color-mix(in srgb, var(--accent) 0%, transparent); }
+  }
+  .animate-glow { animation: glowPulse 1.6s ease-in-out infinite; }
+
+  /* Spinner del banner de update */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner { width: 22px; height: 22px; border-radius: 50%; border: 2.5px solid var(--border); border-top-color: var(--primary); animation: spin .8s linear infinite; }
+
   /* ===== CV styles ===== */
   .cv-h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .8px; font-weight: 800; color: var(--primary); border-bottom: 2px solid var(--border-strong); padding-bottom: 4px; margin-bottom: 8px; }
   .cv-doc { font-family: 'Inter', sans-serif; }
@@ -432,7 +443,7 @@
         </div>
 
         <div class="text-center text-xs text-mute py-2">
-          v1.0.0 · Hecho con Vue 3, Apps Script y Claude API por Luis
+          v{{ APP_VERSION }} · Hecho con Vue 3, Apps Script y Claude API por Luis
         </div>
       </div>
 
@@ -642,7 +653,7 @@
           </div>
         </div>
 
-        <div class="text-center text-xs text-mute py-2">Levo.dev v1.0.0</div>
+        <div class="text-center text-xs text-mute py-2">Levo.dev v{{ APP_VERSION }}</div>
       </div>
     </section>
 
@@ -660,6 +671,21 @@
       </div>
     </div>
   </nav>
+
+  <!-- Banner de actualización -->
+  <transition name="fade">
+    <div v-if="actualizacion.disponible" class="no-print fixed top-3 left-3 right-3 z-50 max-w-md mx-auto">
+      <div class="glass-strong rounded-2xl p-3 flex items-center gap-3 animate-slide-up border-soft" style="border-color: var(--border-strong);">
+        <div class="text-2xl animate-pulse-soft">✨</div>
+        <div class="flex-1 min-w-0">
+          <div class="font-bold text-strong text-sm">Nueva versión disponible</div>
+          <div class="text-xs text-mute">v{{ actualizacion.nuevaVersion }} · {{ actualizacion.lista ? 'lista para instalar 🎉' : 'descargando…' }}</div>
+        </div>
+        <button v-if="actualizacion.lista" @click="aplicarActualizacion" class="btn-lime px-4 py-2 rounded-xl text-xs font-bold animate-glow shrink-0">Actualizar ya</button>
+        <div v-else class="spinner shrink-0"></div>
+      </div>
+    </div>
+  </transition>
 
   <!-- Toast -->
   <transition name="fade">
@@ -685,6 +711,7 @@
 <script>
 const { createApp, ref, computed, onMounted, watch, reactive, nextTick } = Vue;
 const LS_KEY = 'levo.dev.v1';
+const APP_VERSION = '1.1.0'; // ⚠️ Bumpear junto con sw.js y version.json al deployar cambios
 
 // ===== Datos demo iniciales =====
 const OFERTAS_DEMO = [
@@ -1168,7 +1195,7 @@ createApp({
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const o = audioCtx.createOscillator(), g = audioCtx.createGain();
         o.connect(g); g.connect(audioCtx.destination);
-        const freqs = { tap:[440,520], click:[600,720], copy:[660,990], success:[523,659,784], cheer:[523,659,784,1046] };
+        const freqs = { tap:[440,520], click:[600,720], copy:[660,990], success:[523,659,784], cheer:[523,659,784,1046], notify:[880,1100,880] };
         const f = freqs[type] || [440];
         o.type = 'sine'; o.frequency.value = f[0]; g.gain.value = .04;
         o.start();
@@ -1198,9 +1225,69 @@ createApp({
       }, 'Sí, borrar');
     };
 
+    // ===== Sistema de actualizaciones =====
+    const actualizacion = reactive({ disponible:false, nuevaVersion:'', lista:false });
+    let nuevoSW = null;
+
+    const checkVersion = async () => {
+      try {
+        const r = await fetch('./version.json?t=' + Date.now(), { cache:'no-store' });
+        if (!r.ok) return;
+        const v = await r.json();
+        if (v.version && v.version !== APP_VERSION && !actualizacion.disponible) {
+          actualizacion.disponible = true;
+          actualizacion.nuevaVersion = v.version;
+          playSound('notify');
+          // Forzar a SW a buscar update
+          if ('serviceWorker' in navigator) {
+            const reg = await navigator.serviceWorker.getRegistration();
+            if (reg) reg.update();
+            // Fallback: si en 5s no se marca lista, marcamos manualmente
+            setTimeout(() => {
+              if (actualizacion.disponible && !actualizacion.lista) {
+                actualizacion.lista = true; playSound('cheer');
+              }
+            }, 5000);
+          } else { actualizacion.lista = true; }
+        }
+      } catch(e) {}
+    };
+
+    const aplicarActualizacion = () => {
+      playSound('success');
+      if (nuevoSW) nuevoSW.postMessage({ type:'SKIP_WAITING' });
+      mostrarToast('🔄 Actualizando...');
+      setTimeout(() => window.location.reload(), 400);
+    };
+
     onMounted(() => {
       aplicarTema();
-      if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+      // Service Worker + detección de updates
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+          reg.addEventListener('updatefound', () => {
+            const sw = reg.installing;
+            if (!sw) return;
+            nuevoSW = sw;
+            sw.addEventListener('statechange', () => {
+              if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+                actualizacion.lista = true;
+                playSound('cheer');
+              }
+            });
+          });
+        }).catch(()=>{});
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          // Si el usuario aún no apretó, recargamos para tomar el nuevo SW
+          if (actualizacion.disponible && actualizacion.lista) window.location.reload();
+        });
+      }
+
+      // Chequeo inicial + cada 60s
+      setTimeout(checkVersion, 1500);
+      setInterval(checkVersion, 60000);
+
       // Si hay backend configurado, intenta cargar ofertas frescas (silencioso)
       if (backendUrl.value) {
         fetch(backendUrl.value, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'getOfertas' }) })
@@ -1213,7 +1300,7 @@ createApp({
       }
     });
 
-    return { tab, navs, tema, sonidos, backendUrl, yoView, yoMenu, toast, aviso,
+    return { APP_VERSION, tab, navs, tema, sonidos, backendUrl, yoView, yoMenu, toast, aviso,
              stats, proximaAccion, fraseMotivacional, saludoFecha, quickLinks,
              ofertas, filtrosOfertas, filtroOferta, ofertasFiltradas, ofertasNuevas, estrellasColor, marcarPostulada, descartarOferta, recargarOfertas, generarPorqueDeOferta,
              plantillas, plantilla, idioma, form, respuestaIA, copiado, loading, elegirPlantilla, toggleIdioma, generarIA,
@@ -1222,6 +1309,7 @@ createApp({
              plataformasGrupos,
              confirmar, ejecutarConfirmar,
              cv, cvIdioma, alternarCvIdioma, imprimirCV, compartirCV,
+             actualizacion, aplicarActualizacion,
              irA, alternarTema, copiarRespuesta, copiarTexto, guardarBackend, exportarDatos, resetearDatos };
   }
 }).mount('#app');
