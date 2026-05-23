@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a2540">
+<meta name="description" content="CV de Luis Vásquez — Desarrollador Full-Stack & AI-Augmented Solutions Builder">
+<meta property="og:title" content="Luis Vásquez Ostos — Desarrollador Full-Stack">
+<meta property="og:description" content="AI-Augmented Solutions Builder · 6 PWAs en producción · Vue 3 + Apps Script + Claude API">
+<meta property="og:type" content="profile">
+<title>CV — Luis Enrique Vásquez Ostos</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a2540'/%3E%3Ctext x='50' y='65' font-size='52' text-anchor='middle' fill='%2300e5ff' font-family='Inter,sans-serif' font-weight='800'%3EL%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/vue@3.4.21/dist/vue.global.prod.js"></script>
+<style>
+  :root {
+    --deep:#0a2540; --deep2:#0f3358; --bg:#050d1a;
+    --cyan:#00e5ff; --lime:#a3ff12; --ink:#e6f1ff; --mute:#8aa4c2;
+    --border:rgba(0,229,255,.15); --surface:rgba(15,51,88,.55);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; min-height: 100vh; }
+  body { background: radial-gradient(1200px 600px at 50% -10%, var(--deep2) 0%, var(--bg) 60%) fixed; padding: 18px 16px 60px; }
+  a { color: var(--cyan); text-decoration: none; }
+
+  /* Barra de acciones */
+  .actions { position: sticky; top: 12px; z-index: 40; max-width: 860px; margin: 0 auto 18px; display: flex; gap: 8px; justify-content: space-between; align-items: center; padding: 10px 14px; background: rgba(10,37,64,.85); backdrop-filter: blur(14px); border: 1px solid var(--border); border-radius: 16px; }
+  .actions .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; color: var(--ink); font-size: 14px; }
+  .actions .brand-l { width: 28px; height: 28px; background: var(--deep); border: 1px solid rgba(0,229,255,.3); border-radius: 8px; display: grid; place-items: center; color: var(--cyan); font-weight: 900; }
+  .actions .btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .btn { font-family: inherit; font-size: 12px; font-weight: 700; padding: 8px 12px; border-radius: 10px; border: 0; cursor: pointer; transition: transform .12s, filter .2s; }
+  .btn:active { transform: scale(.96); }
+  .btn-ghost { background: rgba(255,255,255,.06); color: var(--ink); border: 1px solid var(--border); }
+  .btn-primary { background: linear-gradient(135deg, var(--cyan), #00b8d4); color: var(--deep); box-shadow: 0 4px 16px -4px rgba(0,229,255,.4); }
+  .btn-primary:hover { filter: brightness(1.1); }
+
+  /* Documento CV */
+  .cv { max-width: 860px; margin: 0 auto; background: var(--surface); backdrop-filter: blur(14px); border: 1px solid var(--border); border-radius: 20px; padding: 32px 28px; }
+  .gradient-text { background: linear-gradient(90deg, var(--cyan), var(--lime)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .cv-header { text-align: center; padding-bottom: 18px; border-bottom: 1px solid var(--border); margin-bottom: 22px; }
+  .cv-header h1 { font-size: clamp(20px, 4vw, 28px); font-weight: 900; letter-spacing: .3px; }
+  .cv-header .role { color: var(--cyan); font-weight: 600; font-size: clamp(13px, 2.2vw, 16px); margin-top: 4px; }
+  .cv-header .sub { color: var(--mute); font-size: 12px; margin-top: 2px; }
+  .contact { color: var(--mute); font-size: 11.5px; margin-top: 12px; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 8px; }
+  .contact .accent { color: var(--lime); }
+
+  .cv h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .9px; font-weight: 800; color: var(--cyan); border-bottom: 2px solid var(--border); padding-bottom: 4px; margin: 22px 0 10px; }
+  .cv h3 { font-size: 14px; font-weight: 700; color: var(--ink); }
+  .cv .meta { font-size: 11px; font-style: italic; color: var(--mute); }
+  .cv p, .cv li { font-size: 12.5px; color: var(--ink); line-height: 1.55; }
+  .cv ul { padding-left: 18px; margin-top: 4px; }
+  .cv ul li { margin-bottom: 3px; }
+  .skill-row { display: grid; grid-template-columns: 140px 1fr; gap: 4px 14px; font-size: 12.5px; margin-bottom: 4px; }
+  .skill-row b { color: var(--cyan); }
+  .exp-block { margin-bottom: 12px; }
+  .proj-row { font-size: 12.5px; margin-bottom: 4px; }
+  .proj-row b { color: var(--ink); }
+  .proj-row .link { color: var(--cyan); font-size: 11.5px; margin-left: 4px; }
+  .edu-row { font-size: 12.5px; margin-bottom: 2px; }
+  .edu-note { font-size: 11px; font-style: italic; color: var(--mute); margin-bottom: 6px; }
+
+  /* Mobile */
+  @media (max-width: 540px) {
+    body { padding: 10px 10px 50px; }
+    .cv { padding: 22px 18px; border-radius: 16px; }
+    .actions { padding: 8px 10px; }
+    .actions .brand span:not(.brand-l) { display: none; }
+    .skill-row { grid-template-columns: 1fr; gap: 1px; margin-bottom: 8px; }
+    .skill-row b { display: block; }
+  }
+
+  /* Print (PDF download) */
+  @media print {
+    @page { size: A4; margin: 14mm 12mm; }
+    html, body { background: #ffffff !important; color: #1a1a1a !important; padding: 0; }
+    .actions { display: none !important; }
+    .cv { background: #ffffff !important; border: 0; padding: 0; max-width: 100%; box-shadow: none; backdrop-filter: none; }
+    .cv * { color: #1a1a1a !important; }
+    .cv h2, .skill-row b, .proj-row .link, .contact a { color: #1f4e79 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .contact .accent { color: #2e7d32 !important; }
+    .cv h2 { border-bottom: 2px solid #c0d4e8 !important; }
+    .cv-header { border-bottom: 2px solid #c0d4e8 !important; }
+    .gradient-text { -webkit-text-fill-color: #0a2540 !important; background: none !important; color: #0a2540 !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- Barra de acciones -->
+  <div class="actions">
+    <a class="brand" href="./" title="Ver portal completo">
+      <span class="brand-l">L</span>
+      <span>Levo.dev</span>
+    </a>
+    <div class="btns">
+      <button class="btn btn-ghost" @click="toggleIdioma">{{ idioma==='es' ? '🇪🇸 ES' : '🇺🇸 EN' }}</button>
+      <button class="btn btn-ghost" @click="compartir">🔗</button>
+      <button class="btn btn-primary" @click="descargar">⬇️ PDF</button>
+    </div>
+  </div>
+
+  <!-- Documento CV -->
+  <div class="cv">
+    <div class="cv-header">
+      <h1 class="gradient-text">LUIS ENRIQUE VÁSQUEZ OSTOS</h1>
+      <div class="role">{{ cv.titulo }}</div>
+      <div class="sub">{{ cv.subtitulo }}</div>
+      <div class="contact">
+        <a href="mailto:luisvo.19@gmail.com">📧 luisvo.19@gmail.com</a>
+        <span>·</span>
+        <span>📱 +51 987 320 381</span>
+        <span>·</span>
+        <span>📍 Lima, Perú</span>
+        <span>·</span>
+        <span class="accent">{{ cv.remoto }}</span>
+        <span>·</span>
+        <a href="https://github.com/Levo19" target="_blank">github.com/Levo19</a>
+        <span>·</span>
+        <a href="./" target="_blank">levo19.github.io/levo.dev</a>
+      </div>
+    </div>
+
+    <h2>{{ cv.perfil.h }}</h2>
+    <p v-html="cv.perfil.txt"></p>
+
+    <h2>{{ cv.habilidades.h }}</h2>
+    <div>
+      <div v-for="(h, i) in cv.habilidades.items" :key="'h'+i" class="skill-row">
+        <b>{{ h.cat }}:</b><span>{{ h.txt }}</span>
+      </div>
+    </div>
+
+    <h2>{{ cv.experiencia.h }}</h2>
+    <div v-for="(e, i) in cv.experiencia.items" :key="'e'+i" class="exp-block">
+      <h3>{{ e.cargo }}</h3>
+      <div class="meta">{{ e.empresa }}</div>
+      <ul>
+        <li v-for="(b, j) in e.bullets" :key="'b'+i+'-'+j" v-html="b"></li>
+      </ul>
+    </div>
+
+    <h2>{{ cv.proyectos.h }}</h2>
+    <div v-for="(p, i) in cv.proyectos.items" :key="'p'+i" class="proj-row">
+      <b>{{ p.nombre }}</b> — {{ p.desc }} <span class="link">{{ p.link }}</span>
+    </div>
+
+    <h2>{{ cv.idiomas.h }}</h2>
+    <ul>
+      <li v-for="(l, i) in cv.idiomas.items" :key="'l'+i"><b>{{ l.nombre }}</b> — {{ l.nivel }}</li>
+    </ul>
+
+    <h2>{{ cv.educacion.h }}</h2>
+    <div class="edu-note">{{ cv.educacion.nota }}</div>
+    <div v-for="(d, i) in cv.educacion.items" :key="'d'+i" class="edu-row">
+      <b>{{ d.titulo }}</b> — {{ d.uni }} · {{ d.años }}
+    </div>
+  </div>
+</div>
+
+<script>
+const CV_CONTENT = {
+  es: {
+    titulo: 'Desarrollador Full-Stack & Solutions Builder (AI-Augmented)',
+    subtitulo: 'Automatización & Sistemas Internos',
+    remoto: '100% Remoto',
+    perfil: { h:'Perfil Profesional', txt:'Desarrollador y diseñador de soluciones que transforma negocios reales de principio a fin. En 3 años diseñé, construí y puse en producción <b>6 aplicaciones web (PWA)</b> que hoy operan dos grupos empresariales completos — un grupo de <b>retail de abarrotes</b> (mayorista y minorista) y un grupo de <b>hotelería + turismo</b> — automatizando venta, almacén, facturación electrónica, caja y administración. Trabajo acelerado por IA (mi flujo evolucionó de AppSheet y n8n a Claude Code). Sólido en <b>JavaScript (ES6+), Vue 3, PWAs y arquitectura serverless</b> (Google Apps Script), con integración de APIs (Nubefact/SUNAT, PrintNode, Firebase, Claude API).' },
+    habilidades: { h:'Habilidades Técnicas', items:[
+      { cat:'Frontend', txt:'JavaScript ES6+, Vue 3 (Composition API), HTML5, CSS3, Tailwind, PWA' },
+      { cat:'Backend', txt:'Google Apps Script (serverless), APIs REST, idempotencia (LockService)' },
+      { cat:'Integraciones', txt:'Nubefact (SUNAT), PrintNode, Firebase Cloud Messaging, Claude API (OCR/visión), Chart.js' },
+      { cat:'Automatización', txt:'n8n, AppSheet, triggers programados' },
+      { cat:'IA aplicada', txt:'Claude Code, Antigravity, Gemini — desarrollo asistido por LLMs' },
+      { cat:'SQL & Datos', txt:'Modelado relacional, consultas con JOINs (intermedio-avanzado)' },
+      { cat:'Tooling', txt:'Git/GitHub, GitHub Pages, clasp, service workers' },
+      { cat:'Infraestructura', txt:'Raspberry Pi 5, redes WiFi, CCTV/DVR, POS' },
+    ]},
+    experiencia: { h:'Experiencia Profesional', items:[
+      { cargo:'Desarrollador Full-Stack & Líder de Sistemas', empresa:'Inversiones Mos EIRL · Retail de abarrotes (mayorista y minorista) · Abril 2023 – Presente', bullets:[
+        'Diseñé y desplegué un <b>ecosistema de 4 PWAs interconectadas</b> (POS, almacén, panel maestro, TV) que digitaliza el ciclo completo retail.',
+        '<b>+900 funciones de backend</b> y 200+ endpoints en Apps Script, con idempotencia, auditoría y manejo robusto de errores.',
+        '<b>POS offline-first</b> con facturación electrónica SUNAT (Nubefact); gestiona 2 puntos de venta 100% remoto.',
+        'Integré <b>IA de visión (Claude API)</b> para OCR automático de facturas de proveedores.',
+        'Integraciones: PrintNode (térmica + ZPL), Firebase FCM, dashboards Chart.js en tiempo real.',
+      ]},
+      { cargo:'Desarrollador & Arquitecto de Sistemas', empresa:'Grupo Paracas · Hotelería & Operador Turístico · 2023 – Presente', bullets:[
+        'Construí un <b>ecosistema de 3 PWAs</b> (PMS hotelero, operaciones marítimas, panel maestro) sobre backend serverless común.',
+        '<b>Panel administrativo en Vue 3</b> (6 vistas) que consolida 3 fuentes de datos en tiempo real.',
+        'Modelé un <b>sistema de pases/derivaciones entre agencias</b> con lógica de negocio no trivial.',
+        'Optimistic UI con rollback, triggers de cierre automático, integración con Google Drive.',
+      ]},
+      { cargo:'Gestor de Operaciones y Depósitos Minoristas', empresa:'Sector Comercial y Logístico · 2008 – Marzo 2023', bullets:[
+        'Más de <b>15 años</b> asegurando el flujo de mercadería y operación de depósitos — base del entendimiento de negocio que hoy traduzco en software.',
+      ]},
+    ]},
+    proyectos: { h:'Proyectos Destacados', items:[
+      { nombre:'Ecosistema Inversiones MOS', desc:'4 PWAs (POS + almacén + panel + TV) con facturación SUNAT, offline-first y OCR IA.', link:'github.com/Levo19/MOS' },
+      { nombre:'MosExpress', desc:'POS PWA Vue 3 + Apps Script.', link:'github.com/Levo19/MosExpress' },
+      { nombre:'Ecosistema grupoPS', desc:'PMS hotelero + operaciones + panel Vue 3.', link:'github.com/Levo19/PS-Panel' },
+      { nombre:'Levo.dev', desc:'Este portal — Vue 3 + GAS + Claude API.', link:'levo19.github.io/levo.dev' },
+    ]},
+    idiomas: { h:'Idiomas', items:[
+      { nombre:'Español', nivel:'Nativo' },
+      { nombre:'Inglés', nivel:'Intermedio (B1-B2): lectura técnica fluida, escrito intermedio-avanzado, reuniones de trabajo' },
+    ]},
+    educacion: { h:'Formación Académica', nota:'Formación universitaria multidisciplinaria en tecnología, administración y contabilidad — base de mi enfoque de desarrollo orientado al negocio.', items:[
+      { titulo:'Ingeniería Informática', uni:'PUCP', años:'2006–2009' },
+      { titulo:'Ingeniería Informática', uni:'USIL', años:'2010–2012' },
+      { titulo:'Administración y Finanzas', uni:'Universidad ESAN', años:'2015–2017' },
+      { titulo:'Contabilidad', uni:'UTP', años:'2023–2025' },
+    ]}
+  },
+  en: {
+    titulo: 'Full-Stack Developer & Solutions Builder (AI-Augmented)',
+    subtitulo: 'Automation & Internal Tools',
+    remoto: '100% Remote',
+    perfil: { h:'Professional Summary', txt:'Developer and solutions designer who transforms real businesses end to end. Over the last 3 years I designed, built and deployed <b>6 production web apps (PWAs)</b> that today run two complete business groups — a <b>wholesale/retail grocery store</b> group and a <b>hotel + tour operator</b> group — automating sales, warehouse, electronic invoicing, cash control and administration. AI-augmented workflow (my stack evolved from AppSheet and n8n to Claude Code). Strong in <b>JavaScript (ES6+), Vue 3, PWAs and serverless architecture</b> (Google Apps Script), integrating APIs (Nubefact/SUNAT, PrintNode, Firebase, Claude API).' },
+    habilidades: { h:'Technical Skills', items:[
+      { cat:'Frontend', txt:'JavaScript ES6+, Vue 3 (Composition API), HTML5, CSS3, Tailwind, PWA' },
+      { cat:'Backend', txt:'Google Apps Script (serverless), REST APIs, idempotency (LockService)' },
+      { cat:'Integrations', txt:'Nubefact (SUNAT e-invoicing), PrintNode, Firebase Cloud Messaging, Claude API (OCR/vision), Chart.js' },
+      { cat:'Automation', txt:'n8n, AppSheet, scheduled triggers' },
+      { cat:'AI applied', txt:'Claude Code, Antigravity, Gemini — LLM-assisted development' },
+      { cat:'SQL & Data', txt:'Relational modeling, queries with JOINs (upper-intermediate/advanced)' },
+      { cat:'Tooling', txt:'Git/GitHub, GitHub Pages, clasp, service workers' },
+      { cat:'Infrastructure', txt:'Raspberry Pi 5, WiFi networks, CCTV/DVR, POS devices' },
+    ]},
+    experiencia: { h:'Professional Experience', items:[
+      { cargo:'Full-Stack Developer & Systems Lead', empresa:'Inversiones Mos EIRL · Wholesale/Retail grocery store · April 2023 – Present', bullets:[
+        'Designed and deployed an <b>ecosystem of 4 interconnected PWAs</b> (POS, warehouse, master panel, TV) that digitizes the full retail cycle.',
+        '<b>900+ backend functions</b> and 200+ endpoints in Apps Script, with idempotency, auditing and robust error handling.',
+        '<b>Offline-first POS</b> with SUNAT electronic invoicing (Nubefact); manages 2 stores 100% remotely.',
+        'Integrated <b>AI vision (Claude API)</b> for automatic OCR of supplier invoices.',
+        'Integrations: PrintNode (thermal + ZPL), Firebase FCM, real-time Chart.js dashboards.',
+      ]},
+      { cargo:'Developer & Systems Architect', empresa:'Grupo Paracas · Hospitality & Tour Operator · 2023 – Present', bullets:[
+        'Built an <b>ecosystem of 3 PWAs</b> (hotel PMS, maritime operations, master panel) on a shared serverless backend.',
+        '<b>Vue 3 admin panel</b> (6 views) consolidating 3 data sources in real time.',
+        'Modeled a <b>passenger transfer system between agencies</b> with non-trivial business logic.',
+        'Optimistic UI with rollback, auto-close triggers, Google Drive integration.',
+      ]},
+      { cargo:'Operations & Retail Warehouse Manager', empresa:'Commercial & Logistics Sector · 2008 – March 2023', bullets:[
+        'Over <b>15 years</b> ensuring merchandise flow and warehouse operations — foundation of the business understanding I now translate into software.',
+      ]},
+    ]},
+    proyectos: { h:'Featured Projects', items:[
+      { nombre:'Inversiones MOS Ecosystem', desc:'4 PWAs (POS + warehouse + panel + TV) with SUNAT invoicing, offline-first and AI OCR.', link:'github.com/Levo19/MOS' },
+      { nombre:'MosExpress', desc:'POS PWA Vue 3 + Apps Script.', link:'github.com/Levo19/MosExpress' },
+      { nombre:'grupoPS Ecosystem', desc:'Hotel PMS + operations + Vue 3 panel.', link:'github.com/Levo19/PS-Panel' },
+      { nombre:'Levo.dev', desc:'This portal — Vue 3 + GAS + Claude API.', link:'levo19.github.io/levo.dev' },
+    ]},
+    idiomas: { h:'Languages', items:[
+      { nombre:'Spanish', nivel:'Native' },
+      { nombre:'English', nivel:'Intermediate (B1-B2): fluent technical reading, upper-intermediate writing, comfortable in work meetings' },
+    ]},
+    educacion: { h:'Education', nota:'Multidisciplinary university background in technology, business administration and accounting — foundation for my business-oriented development approach.', items:[
+      { titulo:'Computer Science Engineering', uni:'PUCP', años:'2006–2009' },
+      { titulo:'Computer Science Engineering', uni:'USIL', años:'2010–2012' },
+      { titulo:'Business Administration & Finance', uni:'ESAN University', años:'2015–2017' },
+      { titulo:'Accounting', uni:'UTP', años:'2023–2025' },
+    ]}
+  }
+};
+
+const { createApp, ref, computed } = Vue;
+createApp({
+  setup() {
+    // Idioma: ?lang=en o ?lang=es, fallback al guardado o ES
+    const params = new URLSearchParams(location.search);
+    const langParam = params.get('lang') || params.get('cv');
+    const idioma = ref(langParam==='en' ? 'en' : (localStorage.getItem('cv-lang') || 'es'));
+    const cv = computed(() => CV_CONTENT[idioma.value]);
+
+    const toggleIdioma = () => {
+      idioma.value = idioma.value==='es' ? 'en' : 'es';
+      localStorage.setItem('cv-lang', idioma.value);
+      // Actualiza URL sin recargar
+      const url = new URL(location.href); url.searchParams.set('lang', idioma.value);
+      history.replaceState({}, '', url);
+    };
+
+    const descargar = () => {
+      const orig = document.title;
+      document.title = idioma.value==='es' ? 'CV - Luis Vasquez Ostos (ES)' : 'CV - Luis Vasquez Ostos (EN)';
+      setTimeout(() => { window.print(); document.title = orig; }, 50);
+    };
+
+    const compartir = async () => {
+      const url = location.origin + location.pathname + '?lang=' + idioma.value;
+      try {
+        if (navigator.share) await navigator.share({ title:'CV — Luis Vásquez Ostos', url });
+        else {
+          await navigator.clipboard.writeText(url);
+          alert('🔗 Link copiado al portapapeles');
+        }
+      } catch(e) {}
+    };
+
+    return { cv, idioma, toggleIdioma, descargar, compartir };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

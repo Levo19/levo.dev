@@ -140,14 +140,19 @@
   .cv-doc { font-family: 'Inter', sans-serif; }
 
   /* ===== Print (descargar PDF) ===== */
+  /* Patrón "print only this element": ocultar todo, mostrar solo el CV, sin dejar espacio vacío. */
   @media print {
     @page { size: A4; margin: 14mm 12mm; }
-    html, body { background: #ffffff !important; color: #1a1a1a !important; height: auto !important; overflow: visible !important; }
-    .no-print, header, nav { display: none !important; }
-    main { padding: 0 !important; max-width: 100% !important; overflow: visible !important; }
-    #app { max-width: 100% !important; }
-    section { display: block !important; }
-    #cv-printable { background: #ffffff !important; border: 0 !important; padding: 0 !important; box-shadow: none !important; backdrop-filter: none !important; color: #1a1a1a !important; display: block !important; }
+    html, body { background: #ffffff !important; color: #1a1a1a !important; height: auto !important; min-height: 0 !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; }
+    /* Ocultar TODO de la app */
+    body * { visibility: hidden !important; }
+    /* Mostrar solo el CV y sus descendientes */
+    #cv-printable, #cv-printable * { visibility: visible !important; }
+    /* Sacar al CV del flujo para que no quede espacio en blanco arriba */
+    #cv-printable { position: absolute !important; left: 0; top: 0; width: 100% !important; margin: 0 !important; padding: 0 !important; background: #ffffff !important; border: 0 !important; box-shadow: none !important; backdrop-filter: none !important; color: #1a1a1a !important; }
+    /* Forzar que nada de la app chrome ocupe layout */
+    .no-print, header, nav, #app > nav, [class*="bottom-0"] { display: none !important; visibility: hidden !important; }
+    /* Colores legibles dentro del CV */
     #cv-printable * { color: #1a1a1a !important; }
     #cv-printable .gradient-text { -webkit-text-fill-color: #0a2540 !important; background: none !important; color: #0a2540 !important; }
     #cv-printable .text-primary, #cv-printable .cv-h2 { color: #1f4e79 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -711,7 +716,7 @@
 <script>
 const { createApp, ref, computed, onMounted, watch, reactive, nextTick } = Vue;
 const LS_KEY = 'levo.dev.v1';
-const APP_VERSION = '1.1.0'; // ⚠️ Bumpear junto con sw.js y version.json al deployar cambios
+const APP_VERSION = '1.2.0'; // ⚠️ Bumpear junto con sw.js y version.json al deployar cambios
 
 // ===== Datos demo iniciales =====
 const OFERTAS_DEMO = [
@@ -947,10 +952,10 @@ createApp({
     };
     const compartirCV = async () => {
       const base = location.origin + location.pathname.replace(/[^/]*$/, '');
-      const url = base + '?cv=' + cvIdioma.value;
+      const url = base + 'cv.html?lang=' + cvIdioma.value;
       try {
-        if (navigator.share) await navigator.share({ title:'CV — Luis Vásquez', url });
-        else { await navigator.clipboard.writeText(url); mostrarToast('🔗 Link copiado'); }
+        if (navigator.share) await navigator.share({ title:'CV — Luis Vásquez Ostos', text:'Mi CV profesional', url });
+        else { await navigator.clipboard.writeText(url); mostrarToast('🔗 Link del CV copiado'); }
       } catch(e) {}
     };
 

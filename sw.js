@@ -1,8 +1,8 @@
 // Levo.dev — Service Worker
 // La versión va atada al cache: bumpear → fuerza redescarga y "nueva versión" en frontend.
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 const CACHE = 'levo-dev-v' + VERSION;
-const ASSETS = ['./', './index.html', './manifest.json', './version.json'];
+const ASSETS = ['./', './index.html', './cv.html', './manifest.json', './version.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
