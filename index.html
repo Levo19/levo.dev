@@ -435,125 +435,84 @@
         </div>
       </div>
 
-      <!-- Sub-vista: CV -->
+      <!-- Sub-vista: CV (bilingüe ES/EN) -->
       <div v-if="yoView==='cv'" class="space-y-4">
         <div class="no-print flex items-center justify-between">
-          <button @click="yoView='menu'" class="text-mute text-sm">← Atrás</button>
+          <button @click="yoView='menu'" class="text-mute text-sm">← {{ cv.ui.atras }}</button>
           <div class="flex gap-2">
-            <button @click="compartirCV" class="btn-ghost px-3 py-2 rounded-xl text-xs font-bold">🔗 Compartir</button>
-            <button @click="imprimirCV" class="btn-primary px-3 py-2 rounded-xl text-xs">⬇️ Descargar PDF</button>
+            <button @click="alternarCvIdioma" class="btn-ghost px-3 py-2 rounded-xl text-xs font-bold">{{ cvIdioma==='es' ? '🇪🇸 Español' : '🇺🇸 English' }}</button>
+            <button @click="compartirCV" class="btn-ghost px-3 py-2 rounded-xl text-xs font-bold">🔗</button>
+            <button @click="imprimirCV" class="btn-primary px-3 py-2 rounded-xl text-xs">⬇️ PDF</button>
           </div>
         </div>
 
         <div id="cv-printable" class="glass rounded-2xl p-5 space-y-5 cv-doc">
-          <!-- Header CV -->
+          <!-- Header -->
           <div class="text-center border-b border-soft pb-4">
             <div class="text-2xl font-black gradient-text">LUIS ENRIQUE VÁSQUEZ OSTOS</div>
-            <div class="text-sm text-primary font-semibold mt-1">Desarrollador Full-Stack &amp; Solutions Builder (AI-Augmented)</div>
-            <div class="text-xs text-mute mt-1">Automatización &amp; Sistemas Internos</div>
+            <div class="text-sm text-primary font-semibold mt-1">{{ cv.titulo }}</div>
+            <div class="text-xs text-mute mt-1">{{ cv.subtitulo }}</div>
             <div class="text-xs text-mute mt-3 flex flex-wrap justify-center gap-x-2 gap-y-1">
               <span>📧 luisvo.19@gmail.com</span><span>·</span>
               <span>📱 +51 987 320 381</span><span>·</span>
               <span>📍 Lima, Perú</span><span>·</span>
-              <span class="text-accent">100% Remoto</span><span>·</span>
+              <span class="text-accent">{{ cv.remoto }}</span><span>·</span>
               <a href="https://github.com/Levo19" target="_blank" class="text-primary">github.com/Levo19</a>
             </div>
           </div>
 
-          <!-- Perfil -->
           <div>
-            <div class="cv-h2">Perfil Profesional</div>
-            <p class="text-xs leading-relaxed text-strong">
-              Desarrollador y diseñador de soluciones que transforma negocios reales de principio a fin. En 3 años diseñé, construí y puse en producción <b>6 aplicaciones web (PWA)</b> que hoy operan dos grupos empresariales completos — un grupo de <b>retail de abarrotes</b> (mayorista y minorista) y un grupo de <b>hotelería + turismo</b> — automatizando venta, almacén, facturación electrónica, caja y administración. Trabajo acelerado por IA (mi flujo evolucionó de AppSheet y n8n a Claude Code). Sólido en <b>JavaScript (ES6+), Vue 3, PWAs y arquitectura serverless</b> (Google Apps Script), con integración de APIs (Nubefact/SUNAT, PrintNode, Firebase, Claude API).
-            </p>
+            <div class="cv-h2">{{ cv.perfil.h }}</div>
+            <p class="text-xs leading-relaxed text-strong" v-html="cv.perfil.txt"></p>
           </div>
 
-          <!-- Habilidades -->
           <div>
-            <div class="cv-h2">Habilidades Técnicas</div>
+            <div class="cv-h2">{{ cv.habilidades.h }}</div>
             <div class="text-xs space-y-1.5">
-              <div><b class="text-primary">Frontend:</b> <span class="text-strong">JavaScript ES6+, Vue 3 (Composition API), HTML5, CSS3, Tailwind, PWA</span></div>
-              <div><b class="text-primary">Backend:</b> <span class="text-strong">Google Apps Script (serverless), APIs REST, idempotencia (LockService)</span></div>
-              <div><b class="text-primary">Integraciones:</b> <span class="text-strong">Nubefact (SUNAT), PrintNode, Firebase Cloud Messaging, Claude API (OCR/visión), Chart.js</span></div>
-              <div><b class="text-primary">Automatización:</b> <span class="text-strong">n8n, AppSheet, triggers programados</span></div>
-              <div><b class="text-primary">IA aplicada:</b> <span class="text-strong">Claude Code, Antigravity, Gemini — desarrollo asistido por LLMs</span></div>
-              <div><b class="text-primary">SQL &amp; Datos:</b> <span class="text-strong">Modelado relacional, consultas con JOINs (nivel intermedio-avanzado)</span></div>
-              <div><b class="text-primary">Tooling:</b> <span class="text-strong">Git/GitHub, GitHub Pages, clasp, service workers</span></div>
-              <div><b class="text-primary">Infraestructura:</b> <span class="text-strong">Raspberry Pi 5, redes WiFi, CCTV/DVR, POS</span></div>
+              <div v-for="(h, i) in cv.habilidades.items" :key="'h'+i">
+                <b class="text-primary">{{ h.cat }}:</b> <span class="text-strong">{{ h.txt }}</span>
+              </div>
             </div>
           </div>
 
-          <!-- Experiencia -->
           <div>
-            <div class="cv-h2">Experiencia Profesional</div>
-
-            <div class="mb-3">
-              <div class="text-sm font-bold text-strong">Desarrollador Full-Stack &amp; Líder de Sistemas</div>
-              <div class="text-[11px] italic text-mute">Inversiones Mos EIRL · Retail de abarrotes (mayorista y minorista) · Abril 2023 – Presente</div>
+            <div class="cv-h2">{{ cv.experiencia.h }}</div>
+            <div v-for="(e, i) in cv.experiencia.items" :key="'e'+i" :class="i < cv.experiencia.items.length-1 ? 'mb-3' : ''">
+              <div class="text-sm font-bold text-strong">{{ e.cargo }}</div>
+              <div class="text-[11px] italic text-mute">{{ e.empresa }}</div>
               <ul class="text-xs mt-1 space-y-1 list-disc pl-4 text-strong">
-                <li>Diseñé y desplegué un <b>ecosistema de 4 PWAs interconectadas</b> (POS, almacén, panel maestro, TV) que digitaliza el ciclo completo retail.</li>
-                <li><b>+900 funciones de backend</b> y 200+ endpoints en Apps Script, con idempotencia, auditoría y manejo robusto de errores.</li>
-                <li><b>POS offline-first</b> con facturación electrónica SUNAT (Nubefact); gestiona 2 puntos de venta 100% remoto.</li>
-                <li>Integré <b>IA de visión (Claude API)</b> para OCR automático de facturas de proveedores.</li>
-                <li>Integraciones: PrintNode (térmica + ZPL), Firebase FCM, dashboards Chart.js en tiempo real.</li>
-              </ul>
-            </div>
-
-            <div class="mb-3">
-              <div class="text-sm font-bold text-strong">Desarrollador &amp; Arquitecto de Sistemas</div>
-              <div class="text-[11px] italic text-mute">Grupo Paracas · Hotelería &amp; Operador Turístico · 2023 – Presente</div>
-              <ul class="text-xs mt-1 space-y-1 list-disc pl-4 text-strong">
-                <li>Construí un <b>ecosistema de 3 PWAs</b> (PMS hotelero, operaciones marítimas, panel maestro) sobre backend serverless común.</li>
-                <li><b>Panel administrativo en Vue 3</b> (6 vistas) que consolida 3 fuentes de datos en tiempo real.</li>
-                <li>Modelé un <b>sistema de pases/derivaciones entre agencias</b> con lógica de negocio no trivial.</li>
-                <li>Optimistic UI con rollback, triggers de cierre automático, integración con Google Drive.</li>
-              </ul>
-            </div>
-
-            <div>
-              <div class="text-sm font-bold text-strong">Gestor de Operaciones y Depósitos Minoristas</div>
-              <div class="text-[11px] italic text-mute">Sector Comercial y Logístico · 2008 – Marzo 2023</div>
-              <ul class="text-xs mt-1 space-y-1 list-disc pl-4 text-strong">
-                <li>Más de <b>15 años</b> asegurando el flujo de mercadería y operación de depósitos — base del entendimiento de negocio que hoy traduzco en software.</li>
+                <li v-for="(b, j) in e.bullets" :key="'b'+i+'-'+j" v-html="b"></li>
               </ul>
             </div>
           </div>
 
-          <!-- Proyectos -->
           <div>
-            <div class="cv-h2">Proyectos Destacados</div>
+            <div class="cv-h2">{{ cv.proyectos.h }}</div>
             <div class="text-xs space-y-1 text-strong">
-              <div><b>Ecosistema Inversiones MOS</b> — 4 PWAs (POS + almacén + panel + TV) con facturación SUNAT, offline-first y OCR IA. <span class="text-primary">github.com/Levo19/MOS</span></div>
-              <div><b>MosExpress</b> — POS PWA Vue 3 + Apps Script. <span class="text-primary">github.com/Levo19/MosExpress</span></div>
-              <div><b>Ecosistema grupoPS</b> — PMS hotelero + operaciones + panel Vue 3. <span class="text-primary">github.com/Levo19/PS-Panel</span></div>
-              <div><b>Levo.dev</b> — Este portal (Vue 3 + GAS + Claude API). <span class="text-primary">github.com/Levo19/levo.dev</span></div>
+              <div v-for="(p, i) in cv.proyectos.items" :key="'p'+i">
+                <b>{{ p.nombre }}</b> — {{ p.desc }} <span class="text-primary">{{ p.link }}</span>
+              </div>
             </div>
           </div>
 
-          <!-- Idiomas -->
           <div>
-            <div class="cv-h2">Idiomas</div>
+            <div class="cv-h2">{{ cv.idiomas.h }}</div>
             <ul class="text-xs space-y-1 list-disc pl-4 text-strong">
-              <li><b>Español</b> — Nativo</li>
-              <li><b>Inglés</b> — Intermedio (B1-B2): lectura técnica fluida, escrito intermedio-avanzado, reuniones de trabajo</li>
+              <li v-for="(l, i) in cv.idiomas.items" :key="'l'+i"><b>{{ l.nombre }}</b> — {{ l.nivel }}</li>
             </ul>
           </div>
 
-          <!-- Educación -->
           <div>
-            <div class="cv-h2">Formación Académica</div>
-            <p class="text-[11px] italic text-mute mb-2">Formación universitaria multidisciplinaria en tecnología, administración y contabilidad — base de mi enfoque de desarrollo orientado al negocio.</p>
+            <div class="cv-h2">{{ cv.educacion.h }}</div>
+            <p class="text-[11px] italic text-mute mb-2">{{ cv.educacion.nota }}</p>
             <div class="text-xs space-y-0.5 text-strong">
-              <div><b>Ingeniería Informática</b> — PUCP · 2006–2009</div>
-              <div><b>Ingeniería Informática</b> — USIL · 2010–2012</div>
-              <div><b>Administración y Finanzas</b> — Universidad ESAN · 2015–2017</div>
-              <div><b>Contabilidad</b> — UTP · 2023–2025</div>
+              <div v-for="(d, i) in cv.educacion.items" :key="'d'+i"><b>{{ d.titulo }}</b> — {{ d.uni }} · {{ d.años }}</div>
             </div>
           </div>
         </div>
 
         <div class="no-print text-center text-xs text-mute">
-          💡 Al darle "Descargar PDF" elige <b>"Guardar como PDF"</b> en el diálogo de impresión.
+          💡 {{ cv.ui.tip }}
         </div>
       </div>
 
@@ -759,6 +718,149 @@ const PLATAFORMAS = [
   ]},
 ];
 
+const CV_CONTENT = {
+  es: {
+    titulo: 'Desarrollador Full-Stack & Solutions Builder (AI-Augmented)',
+    subtitulo: 'Automatización & Sistemas Internos',
+    remoto: '100% Remoto',
+    perfil: {
+      h: 'Perfil Profesional',
+      txt: 'Desarrollador y diseñador de soluciones que transforma negocios reales de principio a fin. En 3 años diseñé, construí y puse en producción <b>6 aplicaciones web (PWA)</b> que hoy operan dos grupos empresariales completos — un grupo de <b>retail de abarrotes</b> (mayorista y minorista) y un grupo de <b>hotelería + turismo</b> — automatizando venta, almacén, facturación electrónica, caja y administración. Trabajo acelerado por IA (mi flujo evolucionó de AppSheet y n8n a Claude Code). Sólido en <b>JavaScript (ES6+), Vue 3, PWAs y arquitectura serverless</b> (Google Apps Script), con integración de APIs (Nubefact/SUNAT, PrintNode, Firebase, Claude API).'
+    },
+    habilidades: {
+      h: 'Habilidades Técnicas',
+      items: [
+        { cat:'Frontend', txt:'JavaScript ES6+, Vue 3 (Composition API), HTML5, CSS3, Tailwind, PWA' },
+        { cat:'Backend', txt:'Google Apps Script (serverless), APIs REST, idempotencia (LockService)' },
+        { cat:'Integraciones', txt:'Nubefact (SUNAT), PrintNode, Firebase Cloud Messaging, Claude API (OCR/visión), Chart.js' },
+        { cat:'Automatización', txt:'n8n, AppSheet, triggers programados' },
+        { cat:'IA aplicada', txt:'Claude Code, Antigravity, Gemini — desarrollo asistido por LLMs' },
+        { cat:'SQL & Datos', txt:'Modelado relacional, consultas con JOINs (nivel intermedio-avanzado)' },
+        { cat:'Tooling', txt:'Git/GitHub, GitHub Pages, clasp, service workers' },
+        { cat:'Infraestructura', txt:'Raspberry Pi 5, redes WiFi, CCTV/DVR, POS' },
+      ]
+    },
+    experiencia: {
+      h: 'Experiencia Profesional',
+      items: [
+        { cargo:'Desarrollador Full-Stack & Líder de Sistemas', empresa:'Inversiones Mos EIRL · Retail de abarrotes (mayorista y minorista) · Abril 2023 – Presente', bullets:[
+          'Diseñé y desplegué un <b>ecosistema de 4 PWAs interconectadas</b> (POS, almacén, panel maestro, TV) que digitaliza el ciclo completo retail.',
+          '<b>+900 funciones de backend</b> y 200+ endpoints en Apps Script, con idempotencia, auditoría y manejo robusto de errores.',
+          '<b>POS offline-first</b> con facturación electrónica SUNAT (Nubefact); gestiona 2 puntos de venta 100% remoto.',
+          'Integré <b>IA de visión (Claude API)</b> para OCR automático de facturas de proveedores.',
+          'Integraciones: PrintNode (térmica + ZPL), Firebase FCM, dashboards Chart.js en tiempo real.',
+        ]},
+        { cargo:'Desarrollador & Arquitecto de Sistemas', empresa:'Grupo Paracas · Hotelería & Operador Turístico · 2023 – Presente', bullets:[
+          'Construí un <b>ecosistema de 3 PWAs</b> (PMS hotelero, operaciones marítimas, panel maestro) sobre backend serverless común.',
+          '<b>Panel administrativo en Vue 3</b> (6 vistas) que consolida 3 fuentes de datos en tiempo real.',
+          'Modelé un <b>sistema de pases/derivaciones entre agencias</b> con lógica de negocio no trivial.',
+          'Optimistic UI con rollback, triggers de cierre automático, integración con Google Drive.',
+        ]},
+        { cargo:'Gestor de Operaciones y Depósitos Minoristas', empresa:'Sector Comercial y Logístico · 2008 – Marzo 2023', bullets:[
+          'Más de <b>15 años</b> asegurando el flujo de mercadería y operación de depósitos — base del entendimiento de negocio que hoy traduzco en software.',
+        ]},
+      ]
+    },
+    proyectos: {
+      h: 'Proyectos Destacados',
+      items: [
+        { nombre:'Ecosistema Inversiones MOS', desc:'4 PWAs (POS + almacén + panel + TV) con facturación SUNAT, offline-first y OCR IA.', link:'github.com/Levo19/MOS' },
+        { nombre:'MosExpress', desc:'POS PWA Vue 3 + Apps Script.', link:'github.com/Levo19/MosExpress' },
+        { nombre:'Ecosistema grupoPS', desc:'PMS hotelero + operaciones + panel Vue 3.', link:'github.com/Levo19/PS-Panel' },
+        { nombre:'Levo.dev', desc:'Este portal (Vue 3 + GAS + Claude API).', link:'github.com/Levo19/levo.dev' },
+      ]
+    },
+    idiomas: {
+      h: 'Idiomas',
+      items: [
+        { nombre:'Español', nivel:'Nativo' },
+        { nombre:'Inglés', nivel:'Intermedio (B1-B2): lectura técnica fluida, escrito intermedio-avanzado, reuniones de trabajo' },
+      ]
+    },
+    educacion: {
+      h: 'Formación Académica',
+      nota: 'Formación universitaria multidisciplinaria en tecnología, administración y contabilidad — base de mi enfoque de desarrollo orientado al negocio.',
+      items: [
+        { titulo:'Ingeniería Informática', uni:'PUCP', años:'2006–2009' },
+        { titulo:'Ingeniería Informática', uni:'USIL', años:'2010–2012' },
+        { titulo:'Administración y Finanzas', uni:'Universidad ESAN', años:'2015–2017' },
+        { titulo:'Contabilidad', uni:'UTP', años:'2023–2025' },
+      ]
+    },
+    ui: { atras:'Atrás', tip:'Al darle "Descargar PDF" elige "Guardar como PDF" en el diálogo de impresión.' }
+  },
+  en: {
+    titulo: 'Full-Stack Developer & Solutions Builder (AI-Augmented)',
+    subtitulo: 'Automation & Internal Tools',
+    remoto: '100% Remote',
+    perfil: {
+      h: 'Professional Summary',
+      txt: 'Developer and solutions designer who transforms real businesses end to end. Over the last 3 years I designed, built and deployed <b>6 production web apps (PWAs)</b> that today run two complete business groups — a <b>wholesale/retail grocery store</b> group and a <b>hotel + tour operator</b> group — automating sales, warehouse, electronic invoicing, cash control and administration. AI-augmented workflow (my stack evolved from AppSheet and n8n to Claude Code). Strong in <b>JavaScript (ES6+), Vue 3, PWAs and serverless architecture</b> (Google Apps Script), integrating APIs (Nubefact/SUNAT, PrintNode, Firebase, Claude API).'
+    },
+    habilidades: {
+      h: 'Technical Skills',
+      items: [
+        { cat:'Frontend', txt:'JavaScript ES6+, Vue 3 (Composition API), HTML5, CSS3, Tailwind, PWA' },
+        { cat:'Backend', txt:'Google Apps Script (serverless), REST APIs, idempotency (LockService)' },
+        { cat:'Integrations', txt:'Nubefact (SUNAT e-invoicing), PrintNode, Firebase Cloud Messaging, Claude API (OCR/vision), Chart.js' },
+        { cat:'Automation', txt:'n8n, AppSheet, scheduled triggers' },
+        { cat:'AI applied', txt:'Claude Code, Antigravity, Gemini — LLM-assisted development' },
+        { cat:'SQL & Data', txt:'Relational modeling, queries with JOINs (upper-intermediate/advanced)' },
+        { cat:'Tooling', txt:'Git/GitHub, GitHub Pages, clasp, service workers' },
+        { cat:'Infrastructure', txt:'Raspberry Pi 5, WiFi networks, CCTV/DVR, POS devices' },
+      ]
+    },
+    experiencia: {
+      h: 'Professional Experience',
+      items: [
+        { cargo:'Full-Stack Developer & Systems Lead', empresa:'Inversiones Mos EIRL · Wholesale/Retail grocery store · April 2023 – Present', bullets:[
+          'Designed and deployed an <b>ecosystem of 4 interconnected PWAs</b> (POS, warehouse, master panel, TV) that digitizes the full retail cycle.',
+          '<b>900+ backend functions</b> and 200+ endpoints in Apps Script, with idempotency, auditing and robust error handling.',
+          '<b>Offline-first POS</b> with SUNAT electronic invoicing (Nubefact); manages 2 stores 100% remotely.',
+          'Integrated <b>AI vision (Claude API)</b> for automatic OCR of supplier invoices.',
+          'Integrations: PrintNode (thermal + ZPL), Firebase FCM, real-time Chart.js dashboards.',
+        ]},
+        { cargo:'Developer & Systems Architect', empresa:'Grupo Paracas · Hospitality & Tour Operator · 2023 – Present', bullets:[
+          'Built an <b>ecosystem of 3 PWAs</b> (hotel PMS, maritime operations, master panel) on a shared serverless backend.',
+          '<b>Vue 3 admin panel</b> (6 views) consolidating 3 data sources in real time.',
+          'Modeled a <b>passenger transfer system between agencies</b> with non-trivial business logic.',
+          'Optimistic UI with rollback, auto-close triggers, Google Drive integration for evidence.',
+        ]},
+        { cargo:'Operations & Retail Warehouse Manager', empresa:'Commercial & Logistics Sector · 2008 – March 2023', bullets:[
+          'Over <b>15 years</b> ensuring merchandise flow and warehouse operations — foundation of the business understanding I now translate into software.',
+        ]},
+      ]
+    },
+    proyectos: {
+      h: 'Featured Projects',
+      items: [
+        { nombre:'Inversiones MOS Ecosystem', desc:'4 PWAs (POS + warehouse + panel + TV) with SUNAT invoicing, offline-first and AI OCR.', link:'github.com/Levo19/MOS' },
+        { nombre:'MosExpress', desc:'POS PWA Vue 3 + Apps Script.', link:'github.com/Levo19/MosExpress' },
+        { nombre:'grupoPS Ecosystem', desc:'Hotel PMS + operations + Vue 3 panel.', link:'github.com/Levo19/PS-Panel' },
+        { nombre:'Levo.dev', desc:'This portal (Vue 3 + GAS + Claude API).', link:'github.com/Levo19/levo.dev' },
+      ]
+    },
+    idiomas: {
+      h: 'Languages',
+      items: [
+        { nombre:'Spanish', nivel:'Native' },
+        { nombre:'English', nivel:'Intermediate (B1-B2): fluent technical reading, upper-intermediate writing, comfortable in work meetings' },
+      ]
+    },
+    educacion: {
+      h: 'Education',
+      nota: 'Multidisciplinary university background in technology, business administration and accounting — foundation for my business-oriented development approach.',
+      items: [
+        { titulo:'Computer Science Engineering', uni:'PUCP', años:'2006–2009' },
+        { titulo:'Computer Science Engineering', uni:'USIL', años:'2010–2012' },
+        { titulo:'Business Administration & Finance', uni:'ESAN University', años:'2015–2017' },
+        { titulo:'Accounting', uni:'UTP', años:'2023–2025' },
+      ]
+    },
+    ui: { atras:'Back', tip:'When clicking "Download PDF", choose "Save as PDF" in the print dialog.' }
+  }
+};
+
 const BANCO_INICIAL = [
   { cat:'Experiencia', titulo:'Tell us about your experience (EN)', texto:"I'm a full-stack developer who designs and ships complete business systems end to end. Over the last 3 years I built and deployed 6 production web apps (PWAs) that today run two business groups — a wholesale/retail store and a hotel + tour operator — automating sales, inventory, electronic invoicing (SUNAT), cash control and administration.\n\nI work mainly with JavaScript, Vue 3, PWAs and a serverless backend (Google Apps Script), integrating REST APIs and third-party services such as Nubefact (e-invoicing), PrintNode (thermal printing), Firebase (push notifications) and the Claude API (I built an AI invoice-OCR feature). I also automate workflows with n8n.\n\nMy strength is turning messy, real-world operations into clear software that works and reduces human error to nearly zero." },
   { cat:'Experiencia', titulo:'Cuéntanos tu experiencia (ES)', texto:'Soy desarrollador full-stack y diseño y entrego sistemas de negocio completos de principio a fin. En los últimos 3 años construí y puse en producción 6 aplicaciones web (PWA) que hoy operan dos grupos empresariales — un negocio mayorista/minorista y un hotel + operador turístico — automatizando ventas, inventario, facturación electrónica (SUNAT), caja y administración.\n\nTrabajo con JavaScript, Vue 3, PWA y backend serverless (Google Apps Script), integrando APIs REST y servicios como Nubefact, PrintNode, Firebase y la API de Claude (desarrollé un OCR de facturas con IA). También automatizo flujos con n8n.\n\nMi fortaleza es convertir operaciones reales y caóticas en software claro que funciona y reduce el error humano a casi cero.' },
@@ -802,12 +904,25 @@ createApp({
       { id:'config', icon:'⚙️', titulo:'Configuración', detalle:'Tema, sonidos, backend' },
     ];
 
-    const imprimirCV = () => { window.print(); };
+    const cvIdioma = ref(persisted.cvIdioma || 'es');
+    const cv = computed(() => CV_CONTENT[cvIdioma.value]);
+    const alternarCvIdioma = () => {
+      cvIdioma.value = cvIdioma.value==='es' ? 'en' : 'es';
+      localStorage.setItem(LS_KEY, JSON.stringify({ ...(JSON.parse(localStorage.getItem(LS_KEY)||'{}')), cvIdioma: cvIdioma.value }));
+      playSound('tap');
+      mostrarToast(cvIdioma.value==='es' ? '🇪🇸 CV en español' : '🇺🇸 CV in English');
+    };
+    const imprimirCV = () => {
+      const tituloOriginal = document.title;
+      document.title = cvIdioma.value==='es' ? 'CV - Luis Vasquez Ostos (ES)' : 'CV - Luis Vasquez Ostos (EN)';
+      setTimeout(() => { window.print(); document.title = tituloOriginal; }, 50);
+    };
     const compartirCV = async () => {
-      const url = location.href.replace(/index\.html.*$/,'') + 'cv.html';
+      const base = location.origin + location.pathname.replace(/[^/]*$/, '');
+      const url = base + '?cv=' + cvIdioma.value;
       try {
         if (navigator.share) await navigator.share({ title:'CV — Luis Vásquez', url });
-        else { await navigator.clipboard.writeText(url); mostrarToast('🔗 Link del CV copiado'); }
+        else { await navigator.clipboard.writeText(url); mostrarToast('🔗 Link copiado'); }
       } catch(e) {}
     };
 
@@ -1083,7 +1198,7 @@ createApp({
              postulaciones, columnasTracker, postuladoModal, nuevaPostulacion, editarPostulacion, guardarPostulacion, eliminarPostulacion, postulacionesEnCol, moverPostulacion, siguienteEstadoLabel, rechazar, tasaRespuesta,
              plataformasGrupos,
              confirmar, ejecutarConfirmar,
-             imprimirCV, compartirCV,
+             cv, cvIdioma, alternarCvIdioma, imprimirCV, compartirCV,
              irA, alternarTema, copiarRespuesta, copiarTexto, guardarBackend, exportarDatos, resetearDatos };
   }
 }).mount('#app');
