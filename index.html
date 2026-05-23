@@ -131,11 +131,12 @@
   /* ===== Print (descargar PDF) ===== */
   @media print {
     @page { size: A4; margin: 14mm 12mm; }
-    body { background: #ffffff !important; color: #1a1a1a !important; }
-    .no-print, header, nav, .pb-28, [class*="bottom-0"] { display: none !important; }
-    main { padding: 0 !important; max-width: 100% !important; }
+    html, body { background: #ffffff !important; color: #1a1a1a !important; height: auto !important; overflow: visible !important; }
+    .no-print, header, nav { display: none !important; }
+    main { padding: 0 !important; max-width: 100% !important; overflow: visible !important; }
     #app { max-width: 100% !important; }
-    #cv-printable { background: #ffffff !important; border: 0 !important; padding: 0 !important; box-shadow: none !important; backdrop-filter: none !important; color: #1a1a1a !important; }
+    section { display: block !important; }
+    #cv-printable { background: #ffffff !important; border: 0 !important; padding: 0 !important; box-shadow: none !important; backdrop-filter: none !important; color: #1a1a1a !important; display: block !important; }
     #cv-printable * { color: #1a1a1a !important; }
     #cv-printable .gradient-text { -webkit-text-fill-color: #0a2540 !important; background: none !important; color: #0a2540 !important; }
     #cv-printable .text-primary, #cv-printable .cv-h2 { color: #1f4e79 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -979,7 +980,19 @@ createApp({
       persist(); mostrarToast('🚀 Postulada y agregada al tracker'); playSound('success'); lanzarConfetti();
     };
     const descartarOferta = (o) => { o.estado = 'descartada'; persist(); playSound('tap'); };
-    const recargarOfertas = () => { mostrarToast('La rutina cron actualiza cada 7am'); playSound('tap'); };
+    const recargarOfertas = async () => {
+      if (!backendUrl.value) { mostrarToast('⚠️ Configura el backend en Yo → Config'); playSound('tap'); return; }
+      mostrarToast('🔄 Buscando ofertas...'); playSound('tap');
+      try {
+        const r = await fetch(backendUrl.value, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'getOfertas' }) });
+        const d = await r.json();
+        if (d.ok && Array.isArray(d.data) && d.data.length > 0) {
+          ofertas.value = d.data.map(o => ({ ...o, encaje: Number(o.encaje) || 2, tags: typeof o.tags==='string' ? o.tags.split(',') : (o.tags||[]) }));
+          persist(); mostrarToast(`✓ ${d.data.length} ofertas cargadas`); playSound('success');
+        } else if (d.ok) { mostrarToast('Sin ofertas nuevas. La rutina cron las llenará a las 7am.'); }
+        else { mostrarToast('Error: ' + (d.error||'?')); }
+      } catch(e) { mostrarToast('Sin conexión con el backend'); }
+    };
     const generarPorqueDeOferta = (o) => {
       irA('ia');
       elegirPlantilla(plantillas[0]);
@@ -1188,6 +1201,16 @@ createApp({
     onMounted(() => {
       aplicarTema();
       if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+      // Si hay backend configurado, intenta cargar ofertas frescas (silencioso)
+      if (backendUrl.value) {
+        fetch(backendUrl.value, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'getOfertas' }) })
+          .then(r => r.json())
+          .then(d => {
+            if (d.ok && Array.isArray(d.data) && d.data.length > 0) {
+              ofertas.value = d.data.map(o => ({ ...o, encaje: Number(o.encaje) || 2, tags: typeof o.tags==='string' ? o.tags.split(',') : (o.tags||[]) }));
+            }
+          }).catch(()=>{});
+      }
     });
 
     return { tab, navs, tema, sonidos, backendUrl, yoView, yoMenu, toast, aviso,
