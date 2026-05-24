@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
-  "date": "2026-05-22",
-  "notes": "CV standalone responsive (cv.html) compartible directo · arreglo bug 3.5 hojas en blanco al imprimir"
+  "version": "1.3.0",
+  "date": "2026-05-23",
+  "notes": "Backend URL por defecto (funciona out-of-the-box) · 5 ofertas vivas pre-cargadas · cron arreglado con node fetch"
 }
